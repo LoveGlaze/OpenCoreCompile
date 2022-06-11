@@ -59,6 +59,6 @@ jobs:
       with:
         prerelease: true
         bodyFile: ReleaseNotes.md
-        artifacts: "Binaries/*.zip"
+        artifacts: "OpenCore/Binaries/*.zip"
         tag: "OpenCore"
         token: ${{ secrets.GITHUB_TOKEN }}
