@@ -1,0 +1,62 @@
+name: compile
+
+on:
+  push:
+    branches: master
+env:
+  PROJECT_TYPE: UEFI
+  FORCE_INSTALL: 1
+  HAS_OPENSSL_BUILD: 1
+  HAS_OPENSSL_W32BUILD: 0
+  WERROR: 1
+jobs:
+  OpenCoreCompile:
+    runs-on: macos-latest
+    env:
+      JOB_TYPE: BUILD
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add Linux Toolchain
+      run: brew tap FiloSottile/homebrew-musl-cross
+
+    - name: Install Linux Toolchain
+      run: brew install musl-cross
+      env:
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
+        HOMEBREW_NO_AUTO_UPDATE: 1
+
+    - name: Install Dependencies
+      run: brew install openssl mingw-w64
+      env:
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
+        HOMEBREW_NO_AUTO_UPDATE: 1
+    - name: Build OpenCore
+      run: |
+        git clone https://github.com/acidanthera/OpenCorePkg.git
+        cd OpenCorePkg
+        git clone https://github.com/acidanthera/ocbuild.git
+        cd ocbuild && chmod +x ci-bootstrap.sh && ./ci-bootstrap.sh && cd ..
+        ./build_duet.tool
+        ./build_oc.tool
+    - name: Generate Prerelease Release Notes
+      run: |
+        echo '### 免責聲明：:' >> ReleaseNotes.md
+        echo '***自动编译开发版OpenCore***' >> ReleaseNotes.md
+        echo '它尚未准备好供日常使用，我们不保证其可用性。' >> ReleaseNotes.md
+    - name: Delete Old Prerelease
+      uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      with:
+        tag_name: OpenCore
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish GitHub Release
+      if: contains(github.event.head_commit.message, 'Bump version') == false
+      uses: ncipollo/release-action@v1.8.6
+      with:
+        prerelease: true
+        bodyFile: ReleaseNotes.md
+        artifacts: "Binaries/*.zip"
+        tag: "OpenCore"
+        token: ${{ secrets.GITHUB_TOKEN }}
