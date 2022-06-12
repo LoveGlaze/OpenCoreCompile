@@ -41,6 +41,7 @@ jobs:
         cd ocbuild && chmod +x ci-bootstrap.sh && ./ci-bootstrap.sh && cd ..
         ./build_duet.tool
         ./build_oc.tool
+        ls
     - name: Generate Prerelease Release Notes
       run: |
         echo '### 免責聲明：:' >> ReleaseNotes.md
@@ -59,6 +60,6 @@ jobs:
       with:
         prerelease: true
         bodyFile: ReleaseNotes.md
-        artifacts: "OpenCore/Binaries/*.zip"
+        artifacts: "OpenCorePkg/Binaries/*.zip"
         tag: "OpenCore"
         token: ${{ secrets.GITHUB_TOKEN }}
