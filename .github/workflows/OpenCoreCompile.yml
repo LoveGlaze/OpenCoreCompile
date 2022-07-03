@@ -4,7 +4,7 @@ on:
   push:
     branches: master
   schedule:
-    - cron: '* */3 * * *' # 每3小时触发, 对于一些更新不那么频繁的项目可以设置为每天一次, 低碳一点
+    - cron: '* * */1 * *' # 每3小时触发, 对于一些更新不那么频繁的项目可以设置为每天一次, 低碳一点
 env:
   PROJECT_TYPE: UEFI
   FORCE_INSTALL: 1
