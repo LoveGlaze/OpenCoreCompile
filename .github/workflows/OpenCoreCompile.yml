@@ -17,7 +17,7 @@ jobs:
     env:
       JOB_TYPE: BUILD
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Add Linux Toolchain
       run: brew tap FiloSottile/homebrew-musl-cross
@@ -48,7 +48,7 @@ jobs:
         echo '***自动编译开发版OpenCore***' >> ReleaseNotes.md
         echo '它尚未准备好供日常使用，我们不保证其可用性。' >> ReleaseNotes.md
     - name: Delete Old Prerelease
-      uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      uses: dev-drprasad/delete-tag-and-release@v1.1
       with:
         tag_name: OpenCore
       env:
@@ -56,7 +56,7 @@ jobs:
 
     - name: Publish GitHub Release
       if: contains(github.event.head_commit.message, 'Bump version') == false
-      uses: ncipollo/release-action@v1.8.6
+      uses: ncipollo/release-action@v1.14.0
       with:
         #prerelease: true
         bodyFile: ReleaseNotes.md
